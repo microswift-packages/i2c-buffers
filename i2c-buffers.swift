@@ -1,7 +1,7 @@
 import HAL
 import i2c
 
-extension Twi {
+public extension Twi {
     static func readIntoBuffer<T:BinaryInteger>(buffer: UnsafeMutableBufferPointer<T>,
     fromAddress address: UInt8,
     startRegister: UInt8,
