@@ -1,7 +1,7 @@
 import HAL
 import i2c
 
-public extension Twi {
+public extension Twi where Twsr.RegisterType == UInt8 {
     static func readIntoBuffer<T:BinaryInteger>(buffer: UnsafeMutableBufferPointer<T>,
     fromAddress address: UInt8,
     startRegister: UInt8,
@@ -9,9 +9,12 @@ public extension Twi {
 
         guard start(timeout: timeout) else { return false }
 
-        guard writeToDevice(address: address, byte: startRegister, timeout: timeout) else { return false }
+        guard write(byte: ((address&0x7f)<<1), timeout: timeout) else { return false }
+        guard write(byte: startRegister, timeout: timeout) else { return false }
 
         defer { stop(timeout: timeout) }
+
+        guard start(timeout: timeout) else { return false }
 
         guard write(byte: ((address&0x7f)<<1)+1, timeout: timeout) else { return false }
 
@@ -23,6 +26,7 @@ public extension Twi {
             let success = withUnsafeMutableBytes(of: &value) { ptr in
                 for j in 0..<l {
                     let ack = !lastValue || j < l - 1
+
                     guard let byte = read(sendAck: ack, timeout: timeout) else {
                         return false
                     }
