@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "i2c-buffers",
+    name: "i2cBuffers",
     products: [
         .library(
             name: "i2cBuffers",
